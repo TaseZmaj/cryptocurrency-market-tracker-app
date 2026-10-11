@@ -40,10 +40,27 @@ services:
 
   frontend:
     image: docker.io/${IMAGE_NAMESPACE}/crypto-frontend:${IMAGE_TAG:-latest}
-    ports:
-      - "80:80"
     depends_on:
       - backend
+    networks:
+      - crypto-network
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN must be set}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL must be set}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - frontend
     networks:
       - crypto-network
     restart: unless-stopped
@@ -51,3 +68,7 @@ services:
 networks:
   crypto-network:
     driver: bridge
+
+volumes:
+  caddy-data:
+  caddy-config:
