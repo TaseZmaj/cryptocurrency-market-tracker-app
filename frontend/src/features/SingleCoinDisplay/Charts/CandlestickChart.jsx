@@ -1,5 +1,10 @@
 // ===========================================================================
-//OLD OHLC CHART -  CURRENTLY NOT IN USE
+//OLD OHLC CHART -  CURRENTLY NOT IN USE!!!
+//OLD OHLC CHART -  CURRENTLY NOT IN USE!!!
+//OLD OHLC CHART -  CURRENTLY NOT IN USE!!!
+//OLD OHLC CHART -  CURRENTLY NOT IN USE!!!
+//OLD OHLC CHART -  CURRENTLY NOT IN USE!!!
+//OLD OHLC CHART -  CURRENTLY NOT IN USE!!!
 // ===========================================================================
 
 import React, { useEffect, useRef, useState } from "react";

@@ -1,5 +1,6 @@
 body {
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -7,6 +8,7 @@ body {
 }
 #root {
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -58,4 +60,32 @@ body {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
+}
+
+.apex-volume-chart .apexcharts-tooltip {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  padding: 0 !important;
+  text-shadow: none !important;
+}
+
+.apex-volume-chart .apexcharts-tooltip,
+.apex-volume-chart .apexcharts-tooltip * {
+  font-family: "Roboto", "Helvetica", Arial, sans-serif !important;
+  font-size: 15px !important;
+  text-shadow: none !important;
+}
+
+.apex-volume-chart .apexcharts-tooltip-title,
+.apex-volume-chart .apexcharts-tooltip-series-group {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.apexcharts-toolbar {
+  top: -10px !important; /* Adjust negative value to push it higher */
+  right: 5px !important;
 }

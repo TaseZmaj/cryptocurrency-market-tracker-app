@@ -1,3 +1,12 @@
+// ===========================================================================
+//OLD VOLUME BAR CHART -  CURRENTLY NOT IN USE!!!
+//OLD VOLUME BAR CHART -  CURRENTLY NOT IN USE!!!
+//OLD VOLUME BAR CHART -  CURRENTLY NOT IN USE!!!
+//OLD VOLUME BAR CHART -  CURRENTLY NOT IN USE!!!
+//OLD VOLUME BAR CHART -  CURRENTLY NOT IN USE!!!
+//OLD VOLUME BAR CHART -  CURRENTLY NOT IN USE!!!
+// ===========================================================================
+
 import { useMemo, useState } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { Box, useColorScheme, useTheme } from "@mui/material";

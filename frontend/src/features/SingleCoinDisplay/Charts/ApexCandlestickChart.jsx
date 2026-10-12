@@ -1,9 +1,13 @@
 import { Box, useColorScheme, useTheme } from "@mui/material";
 import Chart from "react-apexcharts";
+import { useRef } from "react";
 import {
   formatCryptoPriceChart,
   formatIsoToYMD,
 } from "../../../util/stringUtils";
+import { reduceLongRangeData } from "../../../util/chartDataUtils";
+import { activatePanMode } from "./activatePanMode";
+import useCtrlWheelZoom from "./useCtrlWheelZoom";
 
 export default function ApexCandlestickChart({
   datePicker,
@@ -12,18 +16,25 @@ export default function ApexCandlestickChart({
 }) {
   const { mode } = useColorScheme();
   const { palette, typography } = useTheme();
+  const chartContainerRef = useRef(null);
+  useCtrlWheelZoom(chartContainerRef);
   const hideDateLabels = ["1M", "6M", "1Y", "YTD"].includes(datePicker);
-  const hideTicks = ["1Y", "YTD"].includes(datePicker);
+  const hideTicks = ["6M", "1Y", "YTD"].includes(datePicker);
+
+  const rawData = Array.isArray(formattedCoinOhlcvData)
+    ? formattedCoinOhlcvData.map((ohlcv) => ({
+        x: formatIsoToYMD(ohlcv.date),
+        y: [ohlcv.open, ohlcv.high, ohlcv.low, ohlcv.close],
+      }))
+    : [];
+  const data = ["1Y", "YTD"].includes(datePicker)
+    ? reduceLongRangeData(rawData)
+    : rawData;
 
   const series = [
     {
       name: "OHLC",
-      data: Array.isArray(formattedCoinOhlcvData)
-        ? formattedCoinOhlcvData.map((ohlcv) => ({
-            x: formatIsoToYMD(ohlcv.date),
-            y: [ohlcv.open, ohlcv.high, ohlcv.low, ohlcv.close],
-          }))
-        : [],
+      data,
     },
   ];
 
@@ -31,10 +42,31 @@ export default function ApexCandlestickChart({
     chart: {
       type: "candlestick",
       height: 300,
-      toolbar: { show: true },
-      animations: { enabled: true },
-      zoom: { enabled: true },
+      toolbar: {
+        show: true,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true,
+        },
+      },
+      animations: { enabled: false },
+      zoom: {
+        enabled: true,
+        type: "x",
+        autoScaleYaxis: true,
+        allowMouseWheelZoom: true,
+      },
       background: "transparent",
+      events: {
+        mounted: (chartContext) => {
+          activatePanMode(chartContext);
+        },
+      },
     },
     theme: { mode: mode === "dark" ? "dark" : "light" },
     plotOptions: {
@@ -82,6 +114,8 @@ export default function ApexCandlestickChart({
       enabled: true,
       type: "x",
       autoScaleYaxis: true,
+      allowMouseWheelZoom: true,
+      resetControls: { visible: false },
     },
     tooltip: {
       enabled: true,
@@ -119,6 +153,7 @@ export default function ApexCandlestickChart({
   return (
     <Box
       className="apex-candlestick-chart"
+      ref={chartContainerRef}
       sx={{ width: "100%", height: "300px", ...sx }}
     >
       <Chart

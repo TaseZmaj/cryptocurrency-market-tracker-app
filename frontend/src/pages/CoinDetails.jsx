@@ -1,4 +1,11 @@
-import { Box, Grid, Typography, useColorScheme, useTheme } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Typography,
+  useColorScheme,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useLocation } from "react-router-dom";
 import useCoins from "../hooks/useCoins";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -7,6 +14,8 @@ import { formatDate } from "../util/stringUtils.js";
 import PriceDataCard from "../features/SingleCoinDisplay/PriceDataCard.jsx";
 import CandlestickChart from "../features/SingleCoinDisplay/Charts/CandlestickChart.jsx";
 import ApexCandlestickChart from "../features/SingleCoinDisplay/Charts/ApexCandlestickChart.jsx";
+import ApexVolumeChart from "../features/SingleCoinDisplay/Charts/ApexVolumeChart.jsx";
+import ApexVolumeLineChart from "../features/SingleCoinDisplay/Charts/ApexVolumeLineChart.jsx";
 import ChartDateControlButton from "../features/SingleCoinDisplay/Charts/ChartDateControlButton.jsx";
 import useWindowWidth from "../hooks/useWindowWidth.js";
 import VolumeChart from "../features/SingleCoinDisplay/Charts/VolumeChart.jsx";
@@ -19,6 +28,7 @@ import CoinTitle from "../features/SingleCoinDisplay/MainTitle/CoinTitle.jsx";
 import LoadingSkeleton from "../components/LoadingSkeleton.jsx";
 import { motion } from "framer-motion";
 import SingleCoinErrorPage from "./SingleCoinErrorPage.jsx";
+import { darkBackgroundColor } from "../util/uiVars.js";
 
 // Valid ranges from the date picker
 const VALID_RANGES = ["1D", "1W", "1M", "6M", "1Y", "YTD"];
@@ -53,6 +63,8 @@ function CoinDetails() {
     getCoinTechnicalAnalysisById,
     getCoinLstmPredictionById,
   } = useCoins();
+
+  const isTabletOrMobile = useMediaQuery("(max-width: 899px)"); // Adjust the breakpoint as needed
 
   // ================ RESIZING logic ================
   //selects the Big Coin title
@@ -187,7 +199,7 @@ function CoinDetails() {
         flexDirection: { xs: "column", md: "row" },
         width: "100%",
         height: { xs: "fit-content", md: "100%" },
-        overflowY: "hidden",
+        overflowY: { xs: "visible", md: "hidden" },
         minWidth: 0,
         minHeight: "100%",
       }}
@@ -206,7 +218,7 @@ function CoinDetails() {
           minHeight: { xs: "auto", md: 0 },
           flexShrink: 0,
           position: "relative",
-          overflowY: "hidden !important",
+          overflowY: { xs: "visible", md: "hidden !important" },
           zIndex: 1,
           backgroundColor:
             mode === "light" ? palette.common.white : palette.background.dark,
@@ -386,6 +398,8 @@ function CoinDetails() {
       <Box
         sx={{
           display: "flex",
+          alignItems: isTabletOrMobile ? "center" : "",
+          justifyContent: isTabletOrMobile ? "center" : "",
           flexDirection: { xs: "row", md: "column" },
           minHeight: "1px",
           minWidth: 0,
@@ -393,8 +407,7 @@ function CoinDetails() {
           // height: { xs: "auto", md: "100%" },
           position: "relative",
           zIndex: 0,
-          overflowX: "hidden",
-
+          overflow: { xs: "visible", md: "hidden" },
           boxSizing: "border-box",
         }}
       >
@@ -407,7 +420,7 @@ function CoinDetails() {
             // flexGrow: 1,
             minWidth: 0,
             boxSizing: "border-box",
-            overflow: "hidden",
+            overflow: { xs: "visible", md: "hidden" },
             // backgroundColor: palette.grey[300],
           }}
         >
@@ -419,7 +432,12 @@ function CoinDetails() {
               width: "100%",
               overflowX: "auto",
               overflowY: "hidden",
-              p: "10px 5px 5px 0",
+              position: { xs: "sticky", md: "static" },
+              top: { xs: -10, md: "auto" },
+              zIndex: { xs: 15, md: "auto" },
+              backgroundColor:
+                mode === "light" ? palette.common.white : darkBackgroundColor,
+              p: "10px 5px 8px 0",
               boxSizing: "border-box",
               flexDirection: "row",
             }}
@@ -565,7 +583,7 @@ function CoinDetails() {
               !coinLoading &&
               !coinError ? (
                 <ApexCandlestickChart
-                  sx={{ pr: "49px" }}
+                  // sx={{ pr: "49px" }} //If you use the MUI Volume chart, uncomment this
                   datePicker={dateRange}
                   formattedCoinOhlcvData={formattedCoinOhlcvData}
                 />
@@ -602,7 +620,6 @@ function CoinDetails() {
                 maxHeight: "370px",
                 height: "370px",
                 flexGrow: 1,
-                // backgroundColor: palette.grey[500],
               }}
             >
               <Box
@@ -611,9 +628,7 @@ function CoinDetails() {
                   height: "64px",
                   display: "flex",
                   flexDirection: "row",
-                  // justifyContent: "flex-start",
                   alignItems: "flex-start",
-                  // backgroundColor: palette.grey[400],
                 }}
               >
                 <Box sx={{ height: "100%" }}>
@@ -628,12 +643,40 @@ function CoinDetails() {
               {formattedCoinOhlcvData.length > 0 &&
               !coinLoading &&
               !coinError ? (
-                <VolumeChart
-                  key={`volume-chart-${dateRange}`}
-                  datePicker={dateRange}
-                  formattedCoinOhlcvData={formattedCoinOhlcvData}
-                  sx={{ height: "100%", maxWidth: "100%", width: "1362px" }}
-                />
+                <>
+                  {/* The original MUI volume chart is retained for comparison: */}
+                  {/* <VolumeChart
+                    key={`volume-chart-${dateRange}`}
+                    datePicker={dateRange}
+                    formattedCoinOhlcvData={formattedCoinOhlcvData}
+                    sx={{ height: "100%", maxWidth: "100%", width: "1362px" }}
+                  /> */}
+                  {["1M", "6M", "1Y", "YTD"].includes(dateRange) ? (
+                    <ApexVolumeLineChart
+                      key={`apex-volume-line-chart-${dateRange}`}
+                      datePicker={dateRange}
+                      formattedCoinOhlcvData={formattedCoinOhlcvData}
+                      sx={{
+                        height: "100%",
+                        maxWidth: "100%",
+                        // mr:"20px"
+                        // width: "1362px",
+                      }}
+                    />
+                  ) : (
+                    <ApexVolumeChart
+                      key={`apex-volume-chart-${dateRange}`}
+                      datePicker={dateRange}
+                      formattedCoinOhlcvData={formattedCoinOhlcvData}
+                      sx={{
+                        height: "100%",
+                        maxWidth: "100%",
+                        // mr:"20px"
+                        width: "1362px",
+                      }}
+                    />
+                  )}
+                </>
               ) : null}
 
               {coinLoading && !coinError ? (

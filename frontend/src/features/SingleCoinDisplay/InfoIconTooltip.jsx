@@ -45,7 +45,13 @@ function InfoIconTooltip({ placement = "bottom", type, sx }) {
   };
 
   return (
-    <Tooltip title={typeMessages[type]} placement={placement}>
+    <Tooltip
+      title={typeMessages[type]}
+      placement={placement}
+      enterTouchDelay={0}
+      leaveTouchDelay={5000}
+      sx={{ zIndex: 10 }}
+    >
       <InfoOutlineRoundedIcon
         sx={{
           fontSize: "1rem",

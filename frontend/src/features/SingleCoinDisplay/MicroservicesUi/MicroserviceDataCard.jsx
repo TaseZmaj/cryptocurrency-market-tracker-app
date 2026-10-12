@@ -41,9 +41,6 @@ function MicroserviceDataCard({ type, datePicker, sx }) {
   const [filteredTechnicalAnalysisData, setFilteredTechnicalAnalysisData] =
     useState({});
 
-  //TODO: REFACTOR this code.  Not all cards use every variable inside of the component...
-  //Maybe use a custom hook to just get the necessary data into it
-
   //If the Component uses Technical Analysis data
   const analysisData = technicalAnalysisTypes.includes(type)
     ? filteredTechnicalAnalysisData?.last_candle

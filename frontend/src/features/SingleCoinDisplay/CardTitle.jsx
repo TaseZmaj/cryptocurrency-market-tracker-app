@@ -1,4 +1,10 @@
-import { Box, Typography, useColorScheme, useTheme } from "@mui/material";
+import {
+  Box,
+  Typography,
+  useColorScheme,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import InfoIconTooltip from "./InfoIconTooltip.jsx";
 import { formatDate } from "../../util/stringUtils.js";
 import useCoins from "../../hooks/useCoins.js";
@@ -15,6 +21,7 @@ function CardTitle({
   const { mode } = useColorScheme();
   const { palette } = useTheme();
   const { coinLoading, coinError } = useCoins();
+  const isMobile = useMediaQuery("(max-width: 600px)"); // Adjust the breakpoint as needed
 
   return (
     <Box>
@@ -26,7 +33,7 @@ function CardTitle({
       >
         {children}
         <InfoIconTooltip
-          placement="right"
+          placement={isMobile ? "top" : "right"}
           type={tooltipType}
           sx={{ top: -1, left: "2px", verticalAlign: "middle" }}
         />

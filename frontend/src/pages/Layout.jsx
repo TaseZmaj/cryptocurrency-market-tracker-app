@@ -14,7 +14,7 @@ function Layout() {
     <Box
       sx={{
         width: "100%",
-        height: "100%",
+        height: { xs: "100dvh", md: "100%" },
         margin: 0,
         padding: 0,
         display: "flex",
@@ -37,7 +37,7 @@ function Layout() {
           key={pathname}
           sx={{
             width: "100%",
-            height: "100%",
+            height: { xs: "auto", md: "100%" },
             minHeight: 0,
             flexGrow: 1,
           }}

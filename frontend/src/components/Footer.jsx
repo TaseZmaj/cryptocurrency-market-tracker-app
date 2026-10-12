@@ -33,6 +33,7 @@ function Footer({ sx }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          padding: 3,
         }}
       >
         <GitHubIcon
@@ -44,7 +45,7 @@ function Footer({ sx }) {
           }}
         />
       </a>
-      <a
+      {/* <a
         href="https://gitlab.finki.ukim.mk/users/233105/projects"
         target="_blank"
         rel="noopener noreferrer"
@@ -61,7 +62,7 @@ function Footer({ sx }) {
           width={40}
           height={40}
         />
-      </a>
+      </a> */}
     </Box>
   );
 }
