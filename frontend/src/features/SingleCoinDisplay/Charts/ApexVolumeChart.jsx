@@ -6,7 +6,6 @@ import {
   formatIsoToYMD,
 } from "../../../util/stringUtils";
 import { useRef } from "react";
-import { activatePanMode } from "./activatePanMode";
 import useCtrlWheelZoom from "./useCtrlWheelZoom";
 
 export default function ApexVolumeChart({
@@ -46,6 +45,15 @@ export default function ApexVolumeChart({
       height: 300,
       toolbar: {
         show: true,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true,
+        },
       },
       animations: { enabled: false },
       zoom: {
@@ -55,11 +63,6 @@ export default function ApexVolumeChart({
         allowMouseWheelZoom: true,
       },
       background: "transparent",
-      events: {
-        mounted: (chartContext) => {
-          activatePanMode(chartContext);
-        },
-      },
     },
     zoom: {
       enabled: true,

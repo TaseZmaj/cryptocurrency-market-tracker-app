@@ -109,8 +109,8 @@ function MessageBox({
           // border: `1px solid primary.${palette.primary.main}`,
           position: "relative",
           mt: "20px",
-          pt: 1.3,
-          pb: 1.3,
+          pt: 0.65,
+          pb: 0.65,
           color: palette.common.white,
         }}
         startIcon={buttonType === "refresh" ? <RefreshRoundedIcon /> : null}

@@ -89,3 +89,7 @@ body {
   top: -10px !important; /* Adjust negative value to push it higher */
   right: 5px !important;
 }
+
+.apex-volume-chart .apexcharts-toolbar {
+  top: -5px !important;
+}

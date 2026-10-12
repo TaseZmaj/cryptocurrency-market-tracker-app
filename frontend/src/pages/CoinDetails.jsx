@@ -399,7 +399,7 @@ function CoinDetails() {
         sx={{
           display: "flex",
           alignItems: isTabletOrMobile ? "center" : "",
-          justifyContent: isTabletOrMobile ? "center" : "",
+          justifyContent: isTabletOrMobile ? "center" : "center",
           flexDirection: { xs: "row", md: "column" },
           minHeight: "1px",
           minWidth: 0,

@@ -4,11 +4,13 @@ import Footer from "../components/Footer";
 import { Box } from "@mui/material";
 import { useTheme, useColorScheme } from "@mui/material/styles";
 import { useLocation } from "react-router";
+import useCoins from "../hooks/useCoins";
 
 function Layout() {
   const { mode } = useColorScheme();
   const { palette } = useTheme();
   const { pathname } = useLocation();
+  const { coinError } = useCoins();
 
   return (
     <Box
@@ -25,10 +27,16 @@ function Layout() {
 
       <Box
         sx={{
+          display: coinError ? "flex" : "",
+          alignItems: coinError ? "center" : "",
+          justifyContent: coinError ? "center" : "",
           bgcolor:
             mode === "light" ? palette.common.white : palette.background.dark,
           flexGrow: 1,
-          p: { xs: "10px", md: "20px" },
+          p: {
+            xs: "10px 10px 0 10px",
+            md: "20px",
+          },
           overflowY: { xs: "auto", md: "hidden" },
           minHeight: 0,
         }}

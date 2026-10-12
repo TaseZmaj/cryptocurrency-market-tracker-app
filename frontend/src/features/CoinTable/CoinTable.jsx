@@ -24,7 +24,12 @@ import { getComparator } from "../../util/MaterialUtils.js";
 import { useColorScheme } from "@mui/material/styles";
 import useCoins from "../../hooks/useCoins.js";
 import { tableQuery } from "./tableQuery.js";
-import { FormControlLabel, Switch, Tooltip } from "@mui/material";
+import {
+  FormControlLabel,
+  Switch,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
 import MessageBox from "./MessageBox.jsx";
 import LoadingSkeleton from "../../components/LoadingSkeleton.jsx";
 import { formatCryptoPrice } from "../../util/stringUtils.js";
@@ -40,6 +45,7 @@ export default function CoinTable() {
   const [filteredCoins, setFilteredCoins] = useState([]);
   const { mode } = useColorScheme();
   const { palette } = useTheme();
+
   const {
     order,
     setOrder,
@@ -169,7 +175,12 @@ export default function CoinTable() {
           flexDirection: "column",
           width: "100%",
           height: `calc(100vh - ${topBarHeight} - ${footerHeight} - 90px)`,
-          overflow: "hidden",
+          // overflow: "hidden",
+          // height: {
+          //   xs: "auto",
+          //   md: `calc(100vh - ${topBarHeight} - ${footerHeight} - 90px)`,
+          // },
+          overflow: { xs: "visible", md: "hidden" },
           backgroundColor:
             mode === "light" ? palette.background.paper : "transparent",
         }}
@@ -180,6 +191,8 @@ export default function CoinTable() {
             flex: 1,
             minHeight: 0,
             overflow: !coinsError ? "auto" : "hidden",
+            // overflowX: !coinsError ? "auto" : "hidden",
+            // overflowY: { xs: "hidden", md: !coinsError ? "auto" : "hidden" },
             position: "relative",
             isolation: "isolate",
             "&::-webkit-scrollbar": {
@@ -360,13 +373,18 @@ export default function CoinTable() {
             color:
               mode === "light" ? palette.text.primary : palette.common.white,
             "& .MuiTablePagination-toolbar": {
-              flexWrap: { xs: "wrap", sm: "nowrap" },
-              justifyContent: { xs: "center", sm: "flex-end" },
+              display: "flex",
+              flexWrap: { xs: "wrap", sm: "wrap", md: "nowrap" },
+              justifyContent: { xs: "center", sm: "center", md: "flex-end" },
               rowGap: { xs: 0 },
-              marginTop: { xs: "6px" },
+              marginTop: { xs: "5px" },
               minHeight: { xs: "68px", sm: "52px" },
               padding: { xs: "0 4px", sm: "0 16px" },
             },
+            "& .MuiToolbar-gutters": {
+              // backgroundColor: "teal",
+            },
+
             "& .MuiTablePagination-spacer": {
               display: { xs: "none", sm: "block" },
             },
@@ -394,12 +412,26 @@ export default function CoinTable() {
                     ? palette.text.primary
                     : palette.common.white,
               },
+            "& .MuiTablePagination-displayedRows": {
+              margin: "4px",
+            },
+            "& .MuiTablePaginationActions-root": {
+              marginTop: { xs: "5px", sm: 0 },
+              height: "24px",
+            },
             "& .MuiTablePagination-selectLabel": {
-              margin: { xs: "0 0 0 38px", md: 0 },
+              margin: { xs: "0 0 0 38px", sm: "0px" },
             },
             ".MuiSvgIcon-root": {
               color:
                 mode === "light" ? palette.text.primary : palette.common.white,
+            },
+            "& .MuiTablePagination-root": {
+              position: "absolute",
+            },
+            "& .MuiToolbar-root": {
+              position: { xs: "relative", sm: "" },
+              top: { xs: "15px", sm: "0" },
             },
           }}
         />
@@ -522,6 +554,7 @@ function EnhancedTableHead({ order, orderBy, onRequestSort }) {
 const CoinRow = memo(function CoinRow({ coin, animationIndex }) {
   const { palette } = useTheme();
   const { mode } = useColorScheme();
+  const isMobileOrTablet = useMediaQuery("(max-width: 899px)");
   const navigate = useNavigate();
 
   return (
@@ -529,6 +562,7 @@ const CoinRow = memo(function CoinRow({ coin, animationIndex }) {
       enterDelay={300}
       title={`Click for more info about ${coin.name} - ${coin.symbol}`}
       placement="top"
+      sx={{ display: isMobileOrTablet ? "none" : "" }}
     >
       <TableRow
         component={motion.tr}

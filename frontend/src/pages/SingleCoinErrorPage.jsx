@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router";
 import logo from "../assets/logo_v2.png";
 import { motion } from "framer-motion";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 
 function SingleCoinErrorPage({
   coin,
@@ -59,10 +60,10 @@ function SingleCoinErrorPage({
       >
         <Typography
           variant="h1"
-          fontSize="5rem"
           fontWeight="bold"
           sx={{
             color: mode === "light" ? palette.text.primary : palette.grey[100],
+            fontSize: { xs: "3.5rem", md: "5rem" },
           }}
         >
           {isInitializing
@@ -99,13 +100,24 @@ function SingleCoinErrorPage({
         </Typography>
         <Button
           disableElevation
+          disableRipple
+          disableFocusRipple
           variant="contained"
-          sx={{ color: palette.common.white, mt: "14px" }}
+          startIcon={<RefreshRoundedIcon />}
+          sx={{ color: palette.common.white, mt: "14px", pt: 0.65, pb: 0.65 }}
           onClick={() =>
             isInitializing || isUnavailable ? onRetry?.() : navigate("/coins")
           }
         >
-          {isInitializing || isUnavailable ? "Try Again" : "Back to Homepage"}
+          <Typography
+            sx={{
+              fontSize: "1.3rem",
+              fontWeight: 500,
+              color: "#fcfbfbf3",
+            }}
+          >
+            {isInitializing || isUnavailable ? "Try Again" : "Back to Homepage"}
+          </Typography>
         </Button>
       </Box>
     </Box>
