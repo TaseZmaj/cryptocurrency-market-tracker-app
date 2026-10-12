@@ -46,15 +46,6 @@ export default function ApexVolumeChart({
       height: 300,
       toolbar: {
         show: true,
-        tools: {
-          download: false,
-          selection: true,
-          zoom: true,
-          zoomin: true,
-          zoomout: true,
-          pan: true,
-          reset: true,
-        },
       },
       animations: { enabled: false },
       zoom: {

@@ -1,4 +1,4 @@
-import { Box, useColorScheme, useTheme } from "@mui/material";
+import { Box, useColorScheme, useMediaQuery, useTheme } from "@mui/material";
 import Chart from "react-apexcharts";
 import { useRef } from "react";
 import {
@@ -20,6 +20,7 @@ export default function ApexCandlestickChart({
   useCtrlWheelZoom(chartContainerRef);
   const hideDateLabels = ["1M", "6M", "1Y", "YTD"].includes(datePicker);
   const hideTicks = ["6M", "1Y", "YTD"].includes(datePicker);
+  const isTabletOrMobile = useMediaQuery("(max-width: 899px)"); // Adjust the breakpoint as needed
 
   const rawData = Array.isArray(formattedCoinOhlcvData)
     ? formattedCoinOhlcvData.map((ohlcv) => ({
@@ -50,7 +51,7 @@ export default function ApexCandlestickChart({
           zoom: true,
           zoomin: true,
           zoomout: true,
-          pan: true,
+          pan: !isTabletOrMobile,
           reset: true,
         },
       },
