@@ -64,6 +64,9 @@ export default function ApexVolumeChart({
       },
       background: "transparent",
     },
+    dataLabels: {
+      enabled: false,
+    },
     zoom: {
       enabled: true,
       type: "x",

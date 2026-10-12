@@ -26,7 +26,7 @@ import CardTitle from "../features/SingleCoinDisplay/CardTitle.jsx";
 import { useSearchParams } from "react-router-dom";
 import CoinTitle from "../features/SingleCoinDisplay/MainTitle/CoinTitle.jsx";
 import LoadingSkeleton from "../components/LoadingSkeleton.jsx";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import SingleCoinErrorPage from "./SingleCoinErrorPage.jsx";
 import { darkBackgroundColor } from "../util/uiVars.js";
 
@@ -82,6 +82,9 @@ function CoinDetails() {
     : DEFAULT_RANGE;
 
   const setRange = (newRange) => {
+    if (newRange === dateRange) return;
+
+    setIsDateRangeChanging(true);
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
       params.set(PARAM, newRange);
@@ -93,34 +96,54 @@ function CoinDetails() {
   //=================== DATE PICKER RADIO BUTTONS logic ======================
   // const [datePicker, setDatePicker] = useState("1M"); //1W, 1M, 6M, 1Y, YTD
   const [formattedCoinOhlcvData, setFormattedCoinOhlcvData] = useState([]);
+  const [isDateRangeChanging, setIsDateRangeChanging] = useState(false);
 
   function handleFormatCoinOhlcvData() {
     if (!coin || !coin.dataOHLCV || coin.dataOHLCV.length === 0) {
       setFormattedCoinOhlcvData([]);
+      setIsDateRangeChanging(false);
       return;
     }
 
     const limit = DAYS_MAP[searchParams.get(PARAM)];
+    const rawData = coin.dataOHLCV;
+    const totalLength = rawData.length;
 
-    // Keep data ascending (old → new)
-    const source = [...coin.dataOHLCV].reverse();
+    // 1. Determine the slice window efficiently without copying the whole array first.
+    // Assuming rawData is descending (newest -> oldest), the recent items are at the start (index 0).
+    // If your API returns ascending (oldest -> newest), adjust the slice indices accordingly.
+    let sliced;
+    if (limit === Infinity || limit >= totalLength) {
+      sliced = rawData;
+    } else {
+      // Take only the exact number of elements needed from the start (or end depending on API order)
+      sliced = rawData.slice(0, limit);
+    }
+    // 2. If you need ascending order (old -> new) and the raw data is descending,
+    // reversing ONLY the small sliced subset is lightning fast compared to reversing thousands of items.
+    const ordered = [...sliced].reverse();
 
-    const sliced =
-      limit === Infinity
-        ? source
-        : source.slice(-Math.min(limit, source.length)); // still ascending
-
-    const formatted = sliced.map((ohlcv) => ({
-      open: ohlcv.open,
-      high: ohlcv.high,
-      low: ohlcv.low,
-      close: ohlcv.close,
-      volume: ohlcv.totalVolume,
-      date: ohlcv.timestamp,
-    }));
+    // 3. Map directly to the final format
+    const formatted = new Array(ordered.length);
+    for (let i = 0; i < ordered.length; i++) {
+      const ohlcv = ordered[i];
+      formatted[i] = {
+        open: ohlcv.open,
+        high: ohlcv.high,
+        low: ohlcv.low,
+        close: ohlcv.close,
+        volume: ohlcv.totalVolume,
+        date: ohlcv.timestamp,
+      };
+    }
 
     setFormattedCoinOhlcvData(formatted);
+    setIsDateRangeChanging(false);
   }
+
+  // useEffect(() => {
+  //   console.log("formattedCoinOhlcvData:", formattedCoinOhlcvData);
+  // }, [formattedCoinOhlcvData]);
 
   //====================== DATA FORMATTING ================================
   //Refilters the data on change of the Date picker, on change of the coin,
@@ -576,21 +599,35 @@ function CoinDetails() {
                 <CardTitle
                   tooltipType={"ChartOHLC"}
                   formattedCoinData={formattedCoinOhlcvData}
+                  isDateRangeChanging={isDateRangeChanging}
                 >
                   OHLC
                 </CardTitle>
               </Box>
-              {formattedCoinOhlcvData.length > 0 &&
-              !coinLoading &&
-              !coinError ? (
-                <ApexCandlestickChart
-                  // sx={{ pr: "49px" }} //If you use the MUI Volume chart, uncomment this
-                  datePicker={dateRange}
-                  formattedCoinOhlcvData={formattedCoinOhlcvData}
-                />
-              ) : null}
+              <AnimatePresence mode="wait">
+                {formattedCoinOhlcvData.length > 0 &&
+                !coinLoading &&
+                !coinError &&
+                !isDateRangeChanging ? (
+                  <Box
+                    key={`ohlc-chart-${dateRange}`}
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.1, ease: "easeOut" }}
+                    sx={{ width: "100%", height: "300px" }}
+                  >
+                    <ApexCandlestickChart
+                      // sx={{ pr: "49px" }} //If you use the MUI Volume chart, uncomment this
+                      datePicker={dateRange}
+                      formattedCoinOhlcvData={formattedCoinOhlcvData}
+                    />
+                  </Box>
+                ) : null}
+              </AnimatePresence>
 
-              {coinLoading && !coinError ? (
+              {coinLoading && !isDateRangeChanging && !coinError ? (
                 <Box
                   sx={{
                     width: "100%",
@@ -636,51 +673,63 @@ function CoinDetails() {
                   <CardTitle
                     tooltipType={"ChartVolume"}
                     formattedCoinData={formattedCoinOhlcvData}
+                    isDateRangeChanging={isDateRangeChanging}
                   >
                     Volume
                   </CardTitle>
                 </Box>
               </Box>
-              {formattedCoinOhlcvData.length > 0 &&
-              !coinLoading &&
-              !coinError ? (
-                <>
-                  {/* The original MUI volume chart is retained for comparison: */}
-                  {/* <VolumeChart
+              <AnimatePresence mode="wait">
+                {formattedCoinOhlcvData.length > 0 &&
+                !coinLoading &&
+                !coinError &&
+                !isDateRangeChanging ? (
+                  <Box
+                    key={`volume-chart-${dateRange}`}
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.1, ease: "easeOut" }}
+                    sx={{ width: "100%", height: "300px" }}
+                  >
+                    {/* The original MUI volume chart is retained for comparison: */}
+                    {/* <VolumeChart
                     key={`volume-chart-${dateRange}`}
                     datePicker={dateRange}
                     formattedCoinOhlcvData={formattedCoinOhlcvData}
                     sx={{ height: "100%", maxWidth: "100%", width: "1362px" }}
                   /> */}
-                  {["1M", "6M", "1Y", "YTD"].includes(dateRange) ? (
-                    <ApexVolumeLineChart
-                      key={`apex-volume-line-chart-${dateRange}`}
-                      datePicker={dateRange}
-                      formattedCoinOhlcvData={formattedCoinOhlcvData}
-                      sx={{
-                        height: "100%",
-                        maxWidth: "100%",
-                        // mr:"20px"
-                        // width: "1362px",
-                      }}
-                    />
-                  ) : (
-                    <ApexVolumeChart
-                      key={`apex-volume-chart-${dateRange}`}
-                      datePicker={dateRange}
-                      formattedCoinOhlcvData={formattedCoinOhlcvData}
-                      sx={{
-                        height: "100%",
-                        maxWidth: "100%",
-                        // mr:"20px"
-                        width: "1362px",
-                      }}
-                    />
-                  )}
-                </>
-              ) : null}
+                    {["1M", "6M", "1Y", "YTD"].includes(dateRange) ? (
+                      <ApexVolumeLineChart
+                        key={`apex-volume-line-chart-${dateRange}`}
+                        datePicker={dateRange}
+                        formattedCoinOhlcvData={formattedCoinOhlcvData}
+                        sx={{
+                          height: "100%",
+                          maxWidth: "100%",
+                          // mr:"20px"
+                          // width: "1362px",
+                        }}
+                      />
+                    ) : (
+                      <ApexVolumeChart
+                        key={`apex-volume-chart-${dateRange}`}
+                        datePicker={dateRange}
+                        formattedCoinOhlcvData={formattedCoinOhlcvData}
+                        sx={{
+                          height: "100%",
+                          maxWidth: "100%",
+                          // mr:"20px"
+                          width: "1362px",
+                        }}
+                      />
+                    )}
+                  </Box>
+                ) : null}
+              </AnimatePresence>
 
-              {coinLoading && !coinError ? (
+              {coinLoading && !isDateRangeChanging && !coinError ? (
                 <Box
                   sx={{
                     width: "100%",

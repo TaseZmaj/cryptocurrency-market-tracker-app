@@ -138,11 +138,6 @@ export default function CoinTable() {
   }, [sortedCoins, page, rowsPerPage]);
   //=========================================================================
 
-  //TODOs:
-  // TODO: Implement the different buttons - columns, filters, density and refresh
-  //Optional:
-  // TODO: Change the icon component in the table headers to a different arrow
-  // TODO: Add animations
   return (
     <Box>
       <Box
@@ -399,6 +394,14 @@ export default function CoinTable() {
               justifyContent: { xs: "center", sm: "initial" },
               "& .MuiIconButton-root": {
                 padding: { xs: "4px", sm: "6px", lg: "4px" },
+                "&:hover, &:active, &:focus, &.Mui-focusVisible": {
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
+                },
+                "& .MuiTouchRipple-root": {
+                  display: "none",
+                },
+                transition: "none",
               },
               "& .MuiSvgIcon-root": {
                 fontSize: { xs: "2rem", sm: "1.75rem", lg: "2rem" },

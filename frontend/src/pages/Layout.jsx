@@ -27,9 +27,9 @@ function Layout() {
 
       <Box
         sx={{
-          display: coinError ? "flex" : "",
-          alignItems: coinError ? "center" : "",
-          justifyContent: coinError ? "center" : "",
+          display: coinError || pathname === "/" ? "flex" : "",
+          alignItems: coinError || pathname === "/" ? "center" : "",
+          justifyContent: coinError || pathname === "/" ? "center" : "",
           bgcolor:
             mode === "light" ? palette.common.white : palette.background.dark,
           flexGrow: 1,

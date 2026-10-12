@@ -68,6 +68,9 @@ export default function ApexVolumeLineChart({
         },
       },
     },
+    dataLabels: {
+      enabled: false,
+    },
     zoom: {
       enabled: true,
       type: "x",

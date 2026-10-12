@@ -12,7 +12,6 @@ function Home() {
   return (
     <Box
       sx={{
-        flexGrow: 1,
         width: "100%",
         height: "100%",
         bgcolor:
@@ -61,6 +60,7 @@ function Home() {
             variant="h2"
             sx={{
               fontSize: { xs: "2.6rem", md: "3.5rem", lg: "4rem" },
+              marginTop: "120px",
               color:
                 mode === "light" ? palette.text.primary : palette.common.white,
             }}
@@ -91,6 +91,8 @@ function Home() {
             pt: 1.3,
             pb: 1.3,
             "&:hover": {},
+
+            marginBottom: "120px",
           }}
           onClick={() => navigate("/coins")}
           disableElevation

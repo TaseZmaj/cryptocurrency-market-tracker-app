@@ -69,6 +69,10 @@ export default function ApexCandlestickChart({
         },
       },
     },
+
+    dataLabels: {
+      enabled: false,
+    },
     theme: { mode: mode === "dark" ? "dark" : "light" },
     plotOptions: {
       candlestick: {
