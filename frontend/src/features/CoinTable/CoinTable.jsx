@@ -174,7 +174,7 @@ export default function CoinTable() {
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          height: `calc(100vh - ${topBarHeight} - ${footerHeight} - 90px)`,
+          height: `calc(100dvh - ${topBarHeight} - ${footerHeight} - 90px)`,
           // overflow: "hidden",
           // height: {
           //   xs: "auto",
