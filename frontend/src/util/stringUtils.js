@@ -1,10 +1,23 @@
 // ======================= String formatting utility functions ========================
+//Formats values below $0.01 by significant digits instead of a fixed number of decimals,
+//so very cheap coins don't get rounded down to zeroes (e.g. 0.0000000123 -> "$0.0000000123")
+function formatSmallCryptoPrice(price) {
+  return `$${price.toLocaleString(undefined, {
+    maximumSignificantDigits: 4,
+  })}`;
+}
+
 export function formatCryptoPrice(price) {
-  if (price === null || price === undefined || typeof price !== "number")
+  if (
+    price === null ||
+    price === undefined ||
+    typeof price !== "number" ||
+    price === 0
+  )
     return "$0";
 
   if (price < 0.01) {
-    return `$${price.toFixed(8)}`;
+    return formatSmallCryptoPrice(price);
   }
 
   if (price < 1_000_000) {
@@ -44,8 +57,7 @@ export function formatCryptoPriceChart(price) {
     return "$0";
 
   if (price < 0.01) {
-    if (price.toFixed(8) === "0.00000000") return "$0";
-    return `$${price.toFixed(8)}`;
+    return formatSmallCryptoPrice(price);
   }
 
   if (price < 1_000) {

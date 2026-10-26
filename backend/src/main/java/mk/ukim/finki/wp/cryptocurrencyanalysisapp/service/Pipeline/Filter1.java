@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +38,12 @@ public class Filter1 {
         System.out.println("  -> Filter 1: Saving symbols to database...");
         symbolRepository.saveAll(cleanSymbols);
         System.out.println("  -> Filter 1: Successfully saved symbols to database.");
+
+        // 4. Removing symbols that no longer pass the filter, so their stale data doesn't stay in the coin list.
+        // Skipped when the extraction failed (empty) or was interrupted (partial), to avoid wiping valid symbols
+        if (!cleanSymbols.isEmpty() && !Thread.currentThread().isInterrupted()) {
+            removeStaleSymbols(cleanSymbols);
+        }
 
         System.out.println("Filter 1 Completed: Successfully synced " + cleanSymbols.size() + " active symbols to MongoDB.");
         return cleanSymbols;
@@ -117,6 +124,19 @@ public class Filter1 {
 
         // Duplicates are solved by using Symbol as well as ID and MongoDB's unique index
         return true;
+    }
+
+    private void removeStaleSymbols(List<Symbol> cleanSymbols) {
+        Set<String> currentIds = cleanSymbols.stream().map(Symbol::getId).collect(Collectors.toSet());
+
+        List<Symbol> staleSymbols = symbolRepository.findAll().stream()
+                .filter(symbol -> !currentIds.contains(symbol.getId()))
+                .toList();
+
+        if (staleSymbols.isEmpty()) return;
+
+        staleSymbols.forEach(symbol -> System.out.println("Filter 1: Removing symbol that no longer passes the filter: " + symbol.getSymbol() + " (" + symbol.getId() + ")"));
+        symbolRepository.deleteAll(staleSymbols);
     }
 
 

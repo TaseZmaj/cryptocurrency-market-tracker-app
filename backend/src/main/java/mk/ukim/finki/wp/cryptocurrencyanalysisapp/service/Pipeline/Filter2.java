@@ -91,6 +91,13 @@ public class Filter2 {
         try {
             semaphore.acquire(); // acquire slot before API call
                 try {
+                    // 24H data is fetched first, so delisted pairs are dropped before their OHLCV data is loaded
+                    System.out.println("    -> 24H DATA: Getting data for the last 24h for " + symbol.getSymbol());
+                    if (!fetchAdditionalSymbolData(symbol.getId(), symbol.getSymbol())) {
+                        // lastDate=null → Filter 3 skips this symbol as well
+                        return new HistoricalUpdateInfoDTO(symbol.getId(), symbol.getSymbol(), null);
+                    }
+
                     HistoricalData latestData = historicalDataRepository
                             .findTopBySymbolIdOrderByTimestampDesc(symbol.getId())
                             .orElse(null);
@@ -112,9 +119,6 @@ public class Filter2 {
                         lastDate = null; // Filter 3 will know not to increment
                     }
 
-                    System.out.println("    -> 24H DATA: Getting data for the last 24h for " + symbol.getSymbol());
-                    fetchAdditionalSymbolData(symbol.getId(), symbol.getSymbol());
-
                     return new HistoricalUpdateInfoDTO(
                             symbol.getId(),
                             symbol.getSymbol(),
@@ -134,9 +138,11 @@ public class Filter2 {
     }
 
     /**
-     * Fetches data about the coin for the last 24H
+     * Fetches data about the coin for the last 24H.
+     * Returns false if the pair is delisted on Binance (it reports a last price of 0),
+     * in which case the coin's summary is removed so it no longer shows up in the coin list.
      */
-    private void fetchAdditionalSymbolData(String coinId, String binanceSymbol){
+    private boolean fetchAdditionalSymbolData(String coinId, String binanceSymbol){
         String url = BINANCE_TICKER_API + "symbol=" + binanceSymbol + DEFAULT_QUOTE_ASSET;
 
         ResponseEntity<SummaryMetricsDTO> response = restTemplate.exchange(
@@ -147,10 +153,20 @@ public class Filter2 {
         );
 
         SummaryMetricsDTO symbolData24h = response.getBody();
+
+        // Delisted pairs still answer the ticker API, but with every value set to 0
+        if (symbolData24h == null || symbolData24h.getLastPrice() == null
+                || symbolData24h.getLastPrice().signum() <= 0) {
+            System.out.println("    -> Filter 2: Skipping delisted asset (last price is 0 on Binance): " + binanceSymbol);
+            assetSummaryRepository.deleteById(coinId); // removes zeroed summaries saved by earlier runs
+            return false;
+        }
+
         AssetSummary assetSummary = transformAssetSummary(coinId, symbolData24h);
 
         assetSummaryRepository.save(assetSummary);
         System.out.println("    -> 24H DATA: LOADED SUCCESSFULLY");
+        return true;
     }
 
     /**
