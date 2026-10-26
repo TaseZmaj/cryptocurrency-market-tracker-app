@@ -3,6 +3,7 @@ package mk.ukim.finki.wp.cryptocurrencyanalysisapp.repository;
 import mk.ukim.finki.wp.cryptocurrencyanalysisapp.model.MongoDBModels.HistoricalData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,12 @@ public interface HistoricalDataRepository extends MongoRepository<HistoricalData
     List<HistoricalData> findBySymbolIdOrderByTimestampDesc(String symbolId);
 
     List<HistoricalData> findTop30BySymbolIdOrderByTimestampDesc(String symbolId);
+
+    /**
+     * Finds all records for a symbol from the given timestamp onward (inclusive).
+     * Used by Filter 3 to overwrite candles that are already stored instead of inserting duplicates.
+     */
+    List<HistoricalData> findBySymbolIdAndTimestampGreaterThanEqual(String symbolId, Instant timestamp);
 
 
 }

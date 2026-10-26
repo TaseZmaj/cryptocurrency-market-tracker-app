@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,8 +98,9 @@ public class Filter2 {
                     Instant lastDate;
 
                     if (latestData != null) {
-                        // We already have data → Filter 3 will continue incrementally
-                        lastDate = latestData.getTimestamp().plus(1, ChronoUnit.DAYS);
+                        // We already have data → Filter 3 will continue incrementally,
+                        // starting AT the latest candle (it may have been saved mid-day and needs refreshing)
+                        lastDate = latestData.getTimestamp();
                     } else {
                         // No data → run full 10-year load
                         System.out.println("  -> Filter 2: No historical data for " + symbol.getSymbol() + " in the Database. ");

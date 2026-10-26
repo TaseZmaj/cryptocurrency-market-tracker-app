@@ -39,15 +39,42 @@ const DEFAULT_RANGE = "1M";
 
 const PARAM = "date-range";
 
-//<datepicker-value> : <number-of-days>
-const DAYS_MAP = {
-  "1D": 1,
-  "1W": 7,
-  "1M": 31,
-  "6M": 31 * 6,
-  "1Y": 365,
-  YTD: Infinity,
-};
+//Moves a UTC date back by N calendar months, clamping the day to the target month's length
+//(e.g. 31 August - 6 months -> 28/29 February, instead of overflowing into March)
+function subtractUtcMonths(date, months) {
+  const day = date.getUTCDate();
+  date.setUTCDate(1);
+  date.setUTCMonth(date.getUTCMonth() - months);
+  const daysInMonth = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  date.setUTCDate(Math.min(day, daysInMonth));
+}
+
+//Returns the first (inclusive) timestamp of the date picker range, counted back from the newest candle.
+//Months and years are calendar based, so 6M on 26 October starts on 26 April.
+function getRangeStart(newestTimestamp, range) {
+  const start = new Date(newestTimestamp);
+  switch (range) {
+    case "1D":
+      break; // only the newest candle
+    case "1W":
+      start.setUTCDate(start.getUTCDate() - 6); // 7 daily candles
+      break;
+    case "1M":
+      subtractUtcMonths(start, 1);
+      break;
+    case "6M":
+      subtractUtcMonths(start, 6);
+      break;
+    case "1Y":
+      subtractUtcMonths(start, 12);
+      break;
+    case "YTD":
+      return -Infinity; // all of the coin's history
+  }
+  return start.getTime();
+}
 
 function CoinDetails() {
   const { palette } = useTheme();
@@ -105,20 +132,21 @@ function CoinDetails() {
       return;
     }
 
-    const limit = DAYS_MAP[searchParams.get(PARAM)];
     const rawData = coin.dataOHLCV;
     const totalLength = rawData.length;
 
-    // 1. Determine the slice window efficiently without copying the whole array first.
-    // Assuming rawData is descending (newest -> oldest), the recent items are at the start (index 0).
-    // If your API returns ascending (oldest -> newest), adjust the slice indices accordingly.
-    let sliced;
-    if (limit === Infinity || limit >= totalLength) {
-      sliced = rawData;
-    } else {
-      // Take only the exact number of elements needed from the start (or end depending on API order)
-      sliced = rawData.slice(0, limit);
+    // 1. Determine the window by DATE, not by number of rows - if a day is missing in the data,
+    // taking the newest N rows would stretch the range further back than intended.
+    // rawData is descending (newest -> oldest), so the window is a prefix of the array.
+    const rangeStart = getRangeStart(rawData[0].timestamp, dateRange);
+    let end = 0;
+    while (
+      end < totalLength &&
+      new Date(rawData[end].timestamp).getTime() >= rangeStart
+    ) {
+      end++;
     }
+    const sliced = rawData.slice(0, end);
     // 2. If you need ascending order (old -> new) and the raw data is descending,
     // reversing ONLY the small sliced subset is lightning fast compared to reversing thousands of items.
     const ordered = [...sliced].reverse();

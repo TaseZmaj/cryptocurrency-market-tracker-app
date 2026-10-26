@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Collectors;
 
 import static mk.ukim.finki.wp.cryptocurrencyanalysisapp.utils.TransformationUtils.transformKlinesToHistoricalData;
 
@@ -58,8 +60,11 @@ public class Filter3 {
         try {
             semaphore.acquire();  // respect Binance API limits
             try {
+                // Start AT the latest stored candle, not after it: Binance returns candles with
+                // openTime >= startTime, so starting even 1ms later skips the next day's candle.
+                // Re-fetching the latest candle also refreshes it if it was saved while the day was in progress.
                 Instant lastTimestamp = dto.getLastUpdatedDate();
-                long start = lastTimestamp.toEpochMilli() + 1;
+                long start = lastTimestamp.toEpochMilli();
                 long now = Instant.now().toEpochMilli();
 
                 if (start >= now) {
@@ -81,6 +86,7 @@ public class Filter3 {
                     if (klines == null || klines.isEmpty()) break;
 
                     List<HistoricalData> batch = transformKlinesToHistoricalData(dto.getCoinId(), klines);
+                    reuseExistingIds(dto.getCoinId(), batch);
                     historicalDataRepository.saveAll(batch);
                     batchCount++;
 
@@ -100,5 +106,20 @@ public class Filter3 {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Copies the Mongo id of already stored candles onto the fetched ones, so saveAll()
+     * overwrites them (upsert) instead of violating the unique (symbolId, timestamp) index.
+     */
+    private void reuseExistingIds(String coinId, List<HistoricalData> batch) {
+        if (batch.isEmpty()) return;
+
+        Map<Instant, String> existingIds = historicalDataRepository
+                .findBySymbolIdAndTimestampGreaterThanEqual(coinId, batch.get(0).getTimestamp())
+                .stream()
+                .collect(Collectors.toMap(HistoricalData::getTimestamp, HistoricalData::getId, (a, b) -> a));
+
+        batch.forEach(candle -> candle.setId(existingIds.get(candle.getTimestamp())));
     }
 }
