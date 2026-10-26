@@ -17,9 +17,9 @@ export default function ApexVolumeChart({
   const { palette, typography } = useTheme();
   const chartContainerRef = useRef(null);
   useCtrlWheelZoom(chartContainerRef);
-  const hideDateLabels = ["1M", "6M", "1Y", "YTD"].includes(datePicker);
-  const hideTicks = ["6M", "1Y", "YTD"].includes(datePicker);
-  const hideXAxisBarLabels = ["1W", "1M", "6M", "1Y", "YTD"].includes(
+  const hideDateLabels = ["1M", "6M", "1Y", "ALL"].includes(datePicker);
+  const hideTicks = ["6M", "1Y", "ALL"].includes(datePicker);
+  const hideXAxisBarLabels = ["1W", "1M", "6M", "1Y", "ALL"].includes(
     datePicker,
   );
 

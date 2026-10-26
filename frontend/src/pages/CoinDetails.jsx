@@ -31,8 +31,8 @@ import SingleCoinErrorPage from "./SingleCoinErrorPage.jsx";
 import { darkBackgroundColor } from "../util/uiVars.js";
 
 // Valid ranges from the date picker
-const VALID_RANGES = ["1D", "1W", "1M", "6M", "1Y", "YTD"];
-const TECHNICAL_ANALYSIS_UNAVAILABLE_RANGES = ["6M", "1Y", "YTD"];
+const VALID_RANGES = ["1D", "1W", "1M", "6M", "1Y", "ALL"];
+const TECHNICAL_ANALYSIS_UNAVAILABLE_RANGES = ["6M", "1Y", "ALL"];
 
 // Default date picker state
 const DEFAULT_RANGE = "1M";
@@ -70,7 +70,7 @@ function getRangeStart(newestTimestamp, range) {
     case "1Y":
       subtractUtcMonths(start, 12);
       break;
-    case "YTD":
+    case "ALL":
       return -Infinity; // all of the coin's history
   }
   return start.getTime();
@@ -121,7 +121,7 @@ function CoinDetails() {
   // ======================================================================
 
   //=================== DATE PICKER RADIO BUTTONS logic ======================
-  // const [datePicker, setDatePicker] = useState("1M"); //1W, 1M, 6M, 1Y, YTD
+  // const [datePicker, setDatePicker] = useState("1M"); //1W, 1M, 6M, 1Y, ALL
   const [formattedCoinOhlcvData, setFormattedCoinOhlcvData] = useState([]);
   const [isDateRangeChanging, setIsDateRangeChanging] = useState(false);
 
@@ -513,7 +513,7 @@ function CoinDetails() {
               1Y
             </ChartDateControlButton>
             <ChartDateControlButton datePicker={dateRange} onClick={setRange}>
-              YTD
+              ALL
             </ChartDateControlButton>
             <Box
               sx={{
@@ -728,7 +728,7 @@ function CoinDetails() {
                     formattedCoinOhlcvData={formattedCoinOhlcvData}
                     sx={{ height: "100%", maxWidth: "100%", width: "1362px" }}
                   /> */}
-                    {["1M", "6M", "1Y", "YTD"].includes(dateRange) ? (
+                    {["1M", "6M", "1Y", "ALL"].includes(dateRange) ? (
                       <ApexVolumeLineChart
                         key={`apex-volume-line-chart-${dateRange}`}
                         datePicker={dateRange}
@@ -974,7 +974,7 @@ function CoinDetails() {
                     delay:
                       dateRange === "6M" ||
                       dateRange === "1Y" ||
-                      dateRange === "YTD"
+                      dateRange === "ALL"
                         ? 0
                         : 9 * 0.035,
                     ease: "easeOut",

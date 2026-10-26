@@ -1,7 +1,7 @@
 import { Button, Typography, useColorScheme, useTheme } from "@mui/material";
 import { darkBackgroundColor } from "../../../util/uiVars";
 
-//Buttons for controlling the Date for the data that is being displayed (1D, 1W, 1M, 6M, 1Y, YTD)
+//Buttons for controlling the Date for the data that is being displayed (1D, 1W, 1M, 6M, 1Y, ALL)
 function ChartDateControlButton({ datePicker, onClick, children, sx = {} }) {
   const { palette } = useTheme();
   const { mode } = useColorScheme();

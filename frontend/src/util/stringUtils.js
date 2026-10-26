@@ -117,7 +117,7 @@ export function formatDatePickerSelection(datePickerSelection) {
     "1M": "the last month ",
     "6M": "the last 6 months ",
     "1Y": "the last year ",
-    YTD: "year to date ",
+    ALL: "all time ",
   };
 
   return datePickerSelection in mapping

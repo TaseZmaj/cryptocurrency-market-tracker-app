@@ -33,7 +33,7 @@ The app displays live market data, historical OHLCV charts, technical-analysis i
 ## ✨ Features
 
 - 📊 Live market data for 380+ cryptocurrencies, with search and pagination
-- 📈 Historical OHLCV charts with 1D, 1W, 1M, 6M, 1Y and YTD timeframes
+- 📈 Historical OHLCV charts with 1D, 1W, 1M, 6M, 1Y and ALL timeframes
 - 🧮 Technical-analysis indicators: SMA, EMA, WMA, Bollinger Bands, volume analysis, RSI, MACD and the Stochastic Oscillator, each with a bullish/bearish/neutral signal
 - 🤖 LSTM-based price predictions
 - 🔄 Automated ETL pipeline that refreshes the database every 30 minutes

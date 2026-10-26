@@ -19,8 +19,8 @@ export default function ApexVolumeLineChart({
   const { palette, typography } = useTheme();
   const chartContainerRef = useRef(null);
   useCtrlWheelZoom(chartContainerRef);
-  const hideDateLabels = ["1M", "6M", "1Y", "YTD"].includes(datePicker);
-  const hideTicks = ["6M", "1Y", "YTD"].includes(datePicker);
+  const hideDateLabels = ["1M", "6M", "1Y", "ALL"].includes(datePicker);
+  const hideTicks = ["6M", "1Y", "ALL"].includes(datePicker);
 
   const rawData = Array.isArray(formattedCoinOhlcvData)
     ? formattedCoinOhlcvData.map((ohlcv) => ({
@@ -28,7 +28,7 @@ export default function ApexVolumeLineChart({
         y: ohlcv.volume,
       }))
     : [];
-  const data = ["1Y", "YTD"].includes(datePicker)
+  const data = ["1Y", "ALL"].includes(datePicker)
     ? reduceLongRangeData(rawData)
     : rawData;
   const firstVolume = data[0]?.y;
