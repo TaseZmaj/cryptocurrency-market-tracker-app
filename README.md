@@ -47,7 +47,7 @@ The app displays live market data, historical OHLCV charts, technical-analysis i
 
 ## 👥 Team & my role
 
-Built by a team of three as a faculty project. <!-- TODO: add the course name, e.g. "for the Design and Software Architecture course at FCSE" -->
+Built by a team of three as a project for the **Design and Software Architecture** course at FCSE (FINKI).
 
 - **Me ([@TaseZmaj](https://github.com/TaseZmaj)):** designed and built the entire React frontend, developed ~90% of the Spring Boot ETL pipeline, integrated the frontend with the backend, built the CI/CD pipeline, and handled containerization and production deployment
 - **Teammates:** built the Python technical-analysis and LSTM microservices, integrated them with the backend, and wrote the project documentation
