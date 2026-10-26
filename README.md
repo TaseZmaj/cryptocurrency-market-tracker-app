@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/demo-market-overview.gif" alt="Market overview: browsing, paginating and searching the coin table" width="100%" />
+  <img src="demos/demo-market-overview.gif" alt="Market overview: browsing, paginating and searching the coin table" width="100%" />
   <br>
   <em>Market overview: browse 380+ coins, page through the table and search instantly</em>
 </p>
@@ -40,7 +40,7 @@ The app displays live market data, historical OHLCV charts, technical-analysis i
 - ⏱️ Frontend auto-refresh every 10 minutes, so new data appears without reloading the page
 
 <p align="center">
-  <img src="docs/demo-coin-analysis.gif" alt="Coin detail page: OHLCV chart, timeframes and technical-analysis indicators" width="100%" />
+  <img src="demos/demo-coin-analysis.gif" alt="Coin detail page: OHLCV chart, timeframes and technical-analysis indicators" width="100%" />
   <br>
   <em>Coin analysis: 24h data, OHLCV chart with selectable timeframes, and technical-analysis indicators</em>
 </p>
