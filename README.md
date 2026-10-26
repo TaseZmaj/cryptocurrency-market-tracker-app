@@ -231,7 +231,7 @@ The repository also contains the project and requirements documentation:
 ├── caddy/                                Production HTTPS configuration
 ├── designs/                              UI designs
 ├── documentation/                        Project and SRS PDFs
-├── demos/                                 README demo GIFs
+├── demos/                                README demo GIFs
 ├── docker-compose-dev.yml                Development Compose stack
 ├── docker-compose.yml                    Local production-like stack
 ├── docker-compose.prod.yml               OCI production stack
