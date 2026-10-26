@@ -20,8 +20,11 @@
   <img src="https://img.shields.io/badge/Caddy-1F88C0?style=for-the-badge&logo=caddy&logoColor=white" alt="Caddy" />
 </p>
 
-<!-- TODO: add 2–3 screenshots of the live app, e.g. docs/screenshots/home.png -->
-<!-- ![Cryptocurrency Market Tracker screenshot](docs/screenshots/home.png) -->
+<p align="center">
+  <img src="docs/demo-market-overview.gif" alt="Market overview: browsing, paginating and searching the coin table" width="100%" />
+  <br>
+  <em>Market overview: browse 380+ coins, page through the table and search instantly</em>
+</p>
 
 ## 📌 About this project
 
@@ -29,12 +32,18 @@ The app displays live market data, historical OHLCV charts, technical-analysis i
 
 ## ✨ Features
 
-- 📊 Live market data for tracked cryptocurrencies
-- 📈 Historical OHLCV charts with date-range filtering
-- 🧮 Technical-analysis indicators
+- 📊 Live market data for 380+ cryptocurrencies, with search and pagination
+- 📈 Historical OHLCV charts with 1D, 1W, 1M, 6M, 1Y and YTD timeframes
+- 🧮 Technical-analysis indicators: SMA, EMA, WMA, Bollinger Bands, volume analysis, RSI, MACD and the Stochastic Oscillator, each with a bullish/bearish/neutral signal
 - 🤖 LSTM-based price predictions
 - 🔄 Automated ETL pipeline that refreshes the database every 30 minutes
 - ⏱️ Frontend auto-refresh every 10 minutes, so new data appears without reloading the page
+
+<p align="center">
+  <img src="docs/demo-coin-analysis.gif" alt="Coin detail page: OHLCV chart, timeframes and technical-analysis indicators" width="100%" />
+  <br>
+  <em>Coin analysis: 24h data, OHLCV chart with selectable timeframes, and technical-analysis indicators</em>
+</p>
 
 ## 👥 Team & my role
 
@@ -45,12 +54,12 @@ Built by a team of three as a faculty project. <!-- TODO: add the course name, e
 
 ## 🧰 Tech stack
 
-| Layer | Technologies |
-|---|---|
-| Frontend | React, Vite, Material UI, ApexCharts, Nginx |
-| Backend | Java 21, Spring Boot, REST API, scheduled ETL pipeline |
-| Microservices | Python, FastAPI, TensorFlow (LSTM) |
-| Database | MongoDB Atlas |
+| Layer          | Technologies                                                                       |
+| -------------- | ---------------------------------------------------------------------------------- |
+| Frontend       | React, Vite, Material UI, ApexCharts, Nginx                                        |
+| Backend        | Java 21, Spring Boot, REST API, scheduled ETL pipeline                             |
+| Microservices  | Python, FastAPI, TensorFlow (LSTM)                                                 |
+| Database       | MongoDB Atlas                                                                      |
 | Infrastructure | Docker, Docker Compose, Docker Hub, GitHub Actions, Oracle Cloud VM, Caddy (HTTPS) |
 
 ## 🏛️ Architecture
@@ -92,7 +101,6 @@ The service is internal: it isn't exposed to the internet and can only be reache
 The LSTM predictor is a Python FastAPI microservice running on port `8081` that uses TensorFlow to forecast future prices with an LSTM (Long Short-Term Memory) neural network. When the backend requests a prediction for a coin, the service loads the coin's historical price data from MongoDB, runs it through the model, and returns the predicted prices to the backend. <!-- TODO: describe how the model is trained (on startup, per request, or pre-trained) and what it predicts (e.g. the next N days' closing prices) -->
 
 Like the technical-analysis service, it's reachable only through the backend over the private Docker network. Because loading the model is the most memory-intensive step in the system, its TensorFlow, OpenMP and MKL thread counts are limited (see [Memory optimization](#-memory-optimization)).
-
 
 ## 🏗️ Production infrastructure
 
@@ -175,7 +183,6 @@ There are two Docker Compose configurations for local development and testing:
 
 5. Open the frontend at [http://localhost:3000](http://localhost:3000).
 6. The local service endpoints are:
-
    - Backend: [http://localhost:8080](http://localhost:8080)
    - LSTM predictor: [http://localhost:8081](http://localhost:8081)
    - Technical analysis: [http://localhost:8082](http://localhost:8082)
